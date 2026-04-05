@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Detection Result</title>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+    font-family:Arial;
+    background:linear-gradient(135deg,#667eea,#764ba2,#6dd5ed);
+    background-size:400% 400%;
+    animation:bgmove 10s infinite alternate;
+    color:white;
+    text-align:center;
+    padding-top:100px;
+}
+
+@keyframes bgmove{
+0%{background-position:left}
+100%{background-position:right}
+}
+
+.card{
+    background:rgba(255,255,255,0.15);
+    padding:40px;
+    border-radius:20px;
+    width:450px;
+    margin:auto;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+.result{
+    font-size:26px;
+    font-weight:bold;
+    margin:20px 0;
+}
+
+.dashboard{
+    margin-top:30px;
+}
+
+.stats{
+    display:flex;
+    justify-content:space-between;
+    margin-top:15px;
+}
+
+.box{
+    flex:1;
+    margin:5px;
+    padding:10px;
+    border-radius:10px;
+    background:rgba(255,255,255,0.2);
+}
+
+.chart-container{
+    margin-top:30px;
+}
+
+button{
+    padding:12px 25px;
+    border:none;
+    border-radius:25px;
+    background:linear-gradient(90deg,#00f2fe,#4facfe);
+    color:white;
+    cursor:pointer;
+    font-weight:600;
+}
+
+button:hover{
+    transform:scale(1.08);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>Detection Result</h1>
+
+<div class="result">
+{{ prediction }}
+</div>
+
+<p>Confidence: {{ confidence }}%</p>
+
+{% if reasons %}
+<p>⚠ Reasons:</p>
+<ul>
+    {% for r in reasons %}
+    <li>{{ r }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<!-- ================= DASHBOARD ================= -->
+
+<div class="dashboard">
+    <h3>📊 Analysis Dashboard</h3>
+
+    <div class="stats">
+        <div class="box">
+            <h4>Total</h4>
+            <p>{{ total }}</p>
+        </div>
+
+        <div class="box">
+            <h4>Fake</h4>
+            <p>{{ fake }}</p>
+        </div>
+
+        <div class="box">
+            <h4>Real</h4>
+            <p>{{ real }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- ================= PIE CHART ================= -->
+
+<div class="chart-container">
+    <canvas id="myChart"></canvas>
+</div>
+
+<!-- ============================================ -->
+
+<br>
+
+<a href="/">
+<button>Check Another Job</button>
+</a>
+
+</div>
+
+<!-- Chart Script -->
+<script>
+    const fake = parseInt("{{ fake | default('0') }}");
+    const real = parseInt("{{ real | default('0') }}");
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Fake Jobs', 'Real Jobs'],
+            datasets: [{
+                data: [fake, real],
+                backgroundColor: ['#ff4d4d', '#4CAF50']
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "white"
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
